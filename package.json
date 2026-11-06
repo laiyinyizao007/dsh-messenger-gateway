@@ -1,7 +1,7 @@
 {
   "name": "@goodandready/dsh-messenger-gateway",
-  "version": "0.4.29",
-  "description": "Telegram messenger bridge for DeepSeek Harness: sessions, steer, homes, inline asks, notify bridge, and optional TTS voice notes.",
+  "version": "0.4.29+local.1",
+  "description": "Telegram messenger bridge for DeepSeek Harness: sessions, steer, homes, inline asks, notify bridge, and optional TTS voice notes. (local fork: spoken task-completion notice)",
   "license": "MIT",
   "type": "module",
   "main": "./lib/index.js",
