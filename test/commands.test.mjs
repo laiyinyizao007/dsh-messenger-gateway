@@ -10,21 +10,23 @@ import { mergeDynamicCommands, TELEGRAM_DESCRIPTION_BUDGET } from '../lib/comman
 
 const skill = (name, length) => ({ name, description: 'a'.repeat(length) })
 
+/** An explicit base list, so the default command table does not take part. */
+const BASE = [{ command: 'start', description: 'Start' }]
+
 describe('mergeDynamicCommands', () => {
   it('keeps the list inside the description budget', () => {
-    const merged = mergeDynamicCommands([], Array.from({ length: 200 }, (_, i) => skill(`s${i}`, 80)), 100)
+    const merged = mergeDynamicCommands(BASE, Array.from({ length: 200 }, (_, i) => skill(`s${i}`, 80)), 100)
     const chars = merged.reduce((sum, command) => sum + command.description.length, 0)
     assert.ok(chars <= TELEGRAM_DESCRIPTION_BUDGET, `descriptions total ${chars}`)
   })
 
   it('truncates a single long description to the per-command limit', () => {
-    const merged = mergeDynamicCommands([], [skill('long', 6000)], 100)
-    assert.equal(merged.length, 1)
-    assert.equal(merged[0].description.length, 256)
+    const merged = mergeDynamicCommands(BASE, [skill('long', 6000)], 100)
+    assert.equal(merged[merged.length - 1].description.length, 256)
   })
 
   it('stops adding commands once the accumulated descriptions would pass the budget', () => {
-    const merged = mergeDynamicCommands([], Array.from({ length: 300 }, (_, i) => skill(`s${i}`, 100)), 100)
+    const merged = mergeDynamicCommands(BASE, Array.from({ length: 300 }, (_, i) => skill(`s${i}`, 100)), 100)
     const chars = merged.reduce((sum, command) => sum + command.description.length, 0)
     assert.ok(chars <= TELEGRAM_DESCRIPTION_BUDGET)
     // The budget bites before the count limit: 100 commands of 80 characters
@@ -33,7 +35,7 @@ describe('mergeDynamicCommands', () => {
   })
 
   it('never exceeds the command count limit either', () => {
-    const merged = mergeDynamicCommands([], Array.from({ length: 200 }, (_, i) => skill(`s${i}`, 5)), 100)
+    const merged = mergeDynamicCommands(BASE, Array.from({ length: 200 }, (_, i) => skill(`s${i}`, 5)), 100)
     assert.ok(merged.length <= 100)
   })
 
